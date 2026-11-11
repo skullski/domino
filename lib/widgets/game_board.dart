@@ -679,7 +679,7 @@ SnakeLayout computeLayout(
 }) {
   if (board.isEmpty) return SnakeLayout(const [], Rect.zero, 1.0);
 
-  const middleCount = 4;
+  const middleCount = 3;
   final middle = board.take(middleCount).toList();
   final leftMiddle = middle.where((p) => p.side == 'left').length;
   final rightMiddle = middle.where((p) => p.side == 'right').length;
@@ -766,9 +766,11 @@ void _addSide(
     } else if (dir == prevDir) {
       tileCenter = lastCenter + dirs[dir] * (prevAlong / 2 + gap + along / 2);
     } else {
+      // Line the new run's outer edge up with the end of the previous tile,
+      // so a double (short along the chain) doesn't leave a step.
       tileCenter =
           lastCenter +
-          dirs[prevDir] * (prevAlong / 4) +
+          dirs[prevDir] * ((prevAlong - perp) / 2) +
           dirs[dir] * (prevPerp / 2 + along / 2 + gap);
     }
 
