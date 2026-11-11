@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../models/player.dart';
@@ -42,7 +44,10 @@ class OpponentSeat extends StatelessWidget {
           // Tiles centred; 70% hidden under the top edge (30% visible).
           Transform.translate(
             offset: Offset(0, -(130 * _tileScale) * 0.7),
-            child: _tileFan(),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2, left: 8),
+              child: _tileFan(context),
+            ),
           ),
           // Avatar + name take whatever space is free on the right.
           Positioned(
@@ -64,33 +69,39 @@ class OpponentSeat extends StatelessWidget {
     // Avatars sit clockwise around the table: left seat on top, right seat
     // at the bottom.
     final avatarDown = playerIndex == 3;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: playerIndex == 1
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.end,
-      children: [
-        if (!avatarDown) ...[
-          _avatar(color),
-          const SizedBox(height: 4),
-          _namePlate(color),
-        ],
-        const SizedBox(height: 3),
-        Transform.translate(
-          // Hide 70% of the tiles under the side edge (30% visible).
-          offset: Offset(
-            (playerIndex == 1 ? -1 : 1) * (130 * _tileScale * 0.7),
-            0,
+    return Padding(
+      padding: EdgeInsets.only(
+        left: playerIndex == 1 ? 8 : 0,
+        right: playerIndex == 3 ? 8 : 0,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: playerIndex == 1
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
+        children: [
+          if (!avatarDown) ...[
+            _avatar(color),
+            const SizedBox(height: 4),
+            _namePlate(color),
+          ],
+          const SizedBox(height: 3),
+          Transform.translate(
+            // Hide 70% of the tiles under the side edge (30% visible).
+            offset: Offset(
+              (playerIndex == 1 ? -1 : 1) * (130 * _tileScale * 0.7),
+              0,
+            ),
+            child: _tileFan(context),
           ),
-          child: _tileFan(),
-        ),
-        if (avatarDown) ...[
-          const SizedBox(height: 4),
-          _avatar(color),
-          const SizedBox(height: 4),
-          _namePlate(color),
+          if (avatarDown) ...[
+            const SizedBox(height: 4),
+            _avatar(color),
+            const SizedBox(height: 4),
+            _namePlate(color),
+          ],
         ],
-      ],
+      ),
     );
   }
 
@@ -221,32 +232,52 @@ class OpponentSeat extends StatelessWidget {
     );
   }
 
-  Widget _tileFan() {
+  Widget _tileFan(BuildContext context) {
     final count = player.hand.length.clamp(0, 7);
     if (count == 0) return const SizedBox.shrink();
 
-    // All seats use the same bigger tile size.
-    final scale = _tileScale;
+    // Keep the big tile size. Tiles overlap only when the row/stack would
+    // otherwise not fit, so the whole hand stays on screen.
+    const scale = _tileScale;
+    final isTop = direction == Axis.horizontal;
+    // Side seats lie flat and point at the table; the top seat stands up.
+    final tileW =
+        (isTop ? SpriteDominoTile.spriteWidth : SpriteDominoTile.spriteHeight) *
+            scale;
+    final tileH =
+        (isTop ? SpriteDominoTile.spriteHeight : SpriteDominoTile.spriteWidth) *
+            scale;
+    final long = isTop ? tileW : tileH;
 
-    final tiles = List.generate(
-      count,
-      (i) => Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: direction == Axis.horizontal ? 1 : 0,
-          vertical: direction == Axis.vertical ? 1 : 0,
-        ),
-        child: SpriteDominoTile(
-          tile: player.hand[i],
-          faceDown: true,
-          // Side seats lie flat and face the centre; the top seat stands up.
-          horizontal: direction == Axis.vertical,
-          scale: scale,
-        ),
+    final screen = MediaQuery.sizeOf(context);
+    final maxLong = isTop ? screen.width - 130 : screen.height * 0.52;
+    final step = count > 1
+        ? math.min(
+            long + 2,
+            math.max(long * 0.45, (maxLong - long) / (count - 1)),
+          )
+        : long + 2;
+    final total = long + (count - 1) * step;
+
+    return SizedBox(
+      width: isTop ? total : tileW,
+      height: isTop ? tileH : total,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          for (var i = 0; i < count; i++)
+            Positioned(
+              left: isTop ? i * step : 0,
+              top: isTop ? 0 : i * step,
+              child: SpriteDominoTile(
+                tile: player.hand[i],
+                faceDown: true,
+                horizontal: !isTop,
+                scale: scale,
+              ),
+            ),
+        ],
       ),
     );
-
-    return direction == Axis.horizontal
-        ? Row(mainAxisSize: MainAxisSize.min, children: tiles)
-        : Column(mainAxisSize: MainAxisSize.min, children: tiles);
   }
 }

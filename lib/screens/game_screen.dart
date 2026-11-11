@@ -7,6 +7,7 @@ import '../models/domino_tile.dart';
 import '../models/game_state.dart';
 import '../models/player.dart';
 import '../widgets/game_board.dart';
+import '../widgets/hand_over_dialog.dart';
 import '../widgets/opponent_seat.dart';
 import '../widgets/player_rack.dart';
 import '../widgets/score_header.dart';
@@ -174,7 +175,15 @@ class _GameScreenState extends State<GameScreen>
 
   /// Item A — real match setup: shuffle the 28 tiles, deal 7 to each player
   /// (no boneyard), then the 6-6 owner plays it automatically.
+  /// Item A — a fresh match: reset the score, then deal the first hand.
   void _dealGame() {
+    _team1Score = 0;
+    _team2Score = 0;
+    _dealHand();
+  }
+
+  /// Deals one hand: shuffle 28, 7 each (no boneyard), 6-6 owner auto-plays.
+  void _dealHand() {
     final tiles = createDoubleSixSet();
     shuffleTiles(tiles);
 
@@ -191,9 +200,11 @@ class _GameScreenState extends State<GameScreen>
     }
 
     _board.clear();
-    _team1Score = 0;
-    _team2Score = 0;
     _consecutivePasses = 0;
+    _handOver = false;
+    _selected = null;
+    _dragTile = null;
+    _animating = false;
 
     final hands = [_hand, _players[1].hand, _players[2].hand, _players[3].hand];
     for (var i = 0; i < hands.length; i++) {
@@ -205,6 +216,16 @@ class _GameScreenState extends State<GameScreen>
         break;
       }
     }
+
+    _turnStart = DateTime.now();
+    _turnIndex = -1;
+  }
+
+  /// Starts the next hand of the same match, keeping the scores.
+  void _startNextHand() {
+    _dealHand();
+    setState(() {});
+    _scheduleBots();
   }
 
   (int, int) _openEnds() {
@@ -693,25 +714,22 @@ class _GameScreenState extends State<GameScreen>
   /// Blocked hand: the team with the fewest pips wins and scores the other
   /// team's pips.
   void _endBlocked() {
-    _botTimer?.cancel();
     final pips0 = _teamPips(0);
     final pips1 = _teamPips(1);
     final winningTeam = pips0 <= pips1 ? 0 : 1;
     final points = winningTeam == 0 ? pips1 : pips0;
-    setState(() {
-      _handOver = true;
-      if (winningTeam == 0) {
-        _team1Score += points;
-      } else {
-        _team2Score += points;
-      }
-    });
-    _showHandOver(winningTeam, points);
+    _finishHand(winningTeam, points);
   }
 
   void _endHand(int winningTeam) {
-    _botTimer?.cancel();
     final points = _teamPips(1 - winningTeam);
+    _finishHand(winningTeam, points);
+  }
+
+  /// Adds the hand points, then either ends the match (win card) or deals the
+  /// next hand automatically after a short pause.
+  void _finishHand(int winningTeam, int points) {
+    _botTimer?.cancel();
     setState(() {
       _handOver = true;
       if (winningTeam == 0) {
@@ -720,7 +738,16 @@ class _GameScreenState extends State<GameScreen>
         _team2Score += points;
       }
     });
-    _showHandOver(winningTeam, points);
+
+    final gameOver =
+        _team1Score >= _targetScore || _team2Score >= _targetScore;
+    if (gameOver) {
+      _showHandOver(winningTeam, points);
+      return;
+    }
+    _botTimer = Timer(const Duration(milliseconds: 1500), () {
+      if (mounted) _startNextHand();
+    });
   }
 
   int _teamPips(int team) {
@@ -735,236 +762,34 @@ class _GameScreenState extends State<GameScreen>
 
   void _showHandOver(int winningTeam, int points) {
     final isWin = winningTeam == 0;
+    final isGameOver =
+        _team1Score >= _targetScore || _team2Score >= _targetScore;
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        child: Container(
-          width: 330,
-          padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF22348A), Color(0xFF0D1B3E), Color(0xFF070F27)],
-            ),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.18),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 30,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 76,
-                height: 76,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isWin
-                        ? [const Color(0xFFFFE082), const Color(0xFFFFA000)]
-                        : [const Color(0xFF9E9E9E), const Color(0xFF616161)],
-                  ),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: (isWin ? const Color(0xFFFFA000) : Colors.black)
-                          .withValues(alpha: 0.4),
-                      blurRadius: 18,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  isWin ? Icons.emoji_events_rounded : Icons.close_rounded,
-                  color: Colors.white,
-                  size: 38,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ShaderMask(
-                shaderCallback: (bounds) => const LinearGradient(
-                  colors: [
-                    Color(0xFFFFF59D),
-                    Color(0xFFFFD700),
-                    Color(0xFFFF8F00),
-                  ],
-                ).createShader(bounds),
-                child: Text(
-                  isWin ? 'YOU WON!' : 'HAND LOST',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                isWin
-                    ? 'Your team won the hand'
-                    : 'Team ${winningTeam + 1} won the hand',
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                '+$points',
-                style: const TextStyle(
-                  color: Color(0xFFFFD700),
-                  fontSize: 38,
-                  fontWeight: FontWeight.w900,
-                  height: 1.0,
-                ),
-              ),
-              const Text(
-                'POINTS',
-                style: TextStyle(
-                  color: Colors.white38,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 3,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.1),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    _scorePill('TEAM 1', _team1Score, const Color(0xFF64B5F6)),
-                    const SizedBox(width: 8),
-                    _scorePill('TEAM 2', _team2Score, const Color(0xFFEF9A9A)),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-              _dialogButton(
-                label: 'PLAY AGAIN',
-                colors: const [
-                  Color(0xFFFFE082),
-                  Color(0xFFFFD700),
-                  Color(0xFFFF8F00),
-                ],
-                textColor: Colors.white,
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const GameScreen()),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              _dialogButton(
-                label: 'MENU',
-                colors: [
-                  Colors.white.withValues(alpha: 0.12),
-                  Colors.white.withValues(alpha: 0.06),
-                ],
-                textColor: Colors.white70,
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _scorePill(String label, int score, Color color) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 9,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '$score',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _dialogButton({
-    required String label,
-    required List<Color> colors,
-    required Color textColor,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: colors,
-          ),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.3),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ),
+      builder: (ctx) => HandOverDialog(
+        isWin: isWin,
+        isGameOver: isGameOver,
+        winningTeam: winningTeam,
+        points: points,
+        team1Score: _team1Score,
+        team2Score: _team2Score,
+        targetScore: _targetScore,
+        onPrimary: () {
+          Navigator.pop(ctx);
+          if (isGameOver) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const GameScreen()),
+            );
+          } else {
+            _startNextHand();
+          }
+        },
+        onMenu: () {
+          Navigator.pop(ctx);
+          Navigator.pop(context);
+        },
       ),
     );
   }
@@ -1058,7 +883,7 @@ class _GameScreenState extends State<GameScreen>
                     // The domino board.
                     Positioned.fill(
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(40, 50, 40, 28),
+                        padding: const EdgeInsets.fromLTRB(58, 50, 58, 28),
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
