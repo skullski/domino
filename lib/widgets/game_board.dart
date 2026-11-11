@@ -14,8 +14,8 @@ const double _angleVUp = -90.0; // ia
 const String _sa = 'T';
 const String _ea = 'B';
 
-const double _tileW = 102.0;
-const double _tileH = 50.0;
+const double _tileW = 130.0;
+const double _tileH = 60.0;
 
 /// Is horizontal angle? (matches APK's aa: 0 or 180).
 bool _aa(double angle) => angle == _angleH || angle == _angleHRev;
@@ -75,7 +75,7 @@ void _ra(
     final a = id[0] == l;
     var newAngle = _angleHRev;
     if (id[0] == id[1]) {
-      newAngle = _angleH;
+      newAngle = h ? _angleVDown : _angleVUp;
     } else {
       String tmp;
       if (r == _angleVDown || r == _angleH) {
@@ -90,7 +90,8 @@ void _ra(
         newAngle = h ? _angleVDown : _angleVUp;
       }
     }
-    final c = (_aa(r) ? n.width : n.height) / 2 +
+    final c =
+        (_aa(r) ? n.width : n.height) / 2 +
         (_aa(newAngle) ? n.width : n.height) / 2;
     o = h ? o - c : o + c;
     ha.add(_Pos(id, o, s.dy, newAngle));
@@ -119,7 +120,7 @@ void _la(
     final u = id[0] == r;
     var newAngle = _angleHRev;
     if (id[0] == id[1]) {
-      newAngle = _angleVDown;
+      newAngle = h ? _angleHRev : _angleH;
     } else {
       String tmp;
       if (o == _angleVDown || o == _angleH) {
@@ -134,7 +135,8 @@ void _la(
         newAngle = h ? _angleHRev : _angleH;
       }
     }
-    final d = (_aa(o) ? n.height : n.width) / 2 +
+    final d =
+        (_aa(o) ? n.height : n.width) / 2 +
         (_aa(newAngle) ? n.height : n.width) / 2;
     a = h ? a + d : a - d;
     if (_isSentinel(id) && h) a += l;
@@ -340,7 +342,8 @@ List<_Pos> _na(
     final t6 = math.max(C + dollar + g + 1, j + C + g + 1);
     v['bottom']![2] = v['bottom']![1] + _ca(e, v['bottom']![1], t6, 0);
   } else if (X >= j + C + g + 1) {
-    v['bottom']![2] = v['bottom']![1] + _ca(e, v['bottom']![1], j + C + g + 1, 0);
+    v['bottom']![2] =
+        v['bottom']![1] + _ca(e, v['bottom']![1], j + C + g + 1, 0);
   } else if (u == 0 && X > b / 2) {
     final t6 = _da(e, v['bottom']![1], y / 2, 0);
     final i2 = _ua(e, d, v['bottom']![1] + t6);
@@ -367,13 +370,17 @@ List<_Pos> _na(
     if (o) {
       f['right'] = last.angle;
       p['right'] = last.id;
-      pos['right'] =
-          Offset(_aa(f['right']!) ? last.x : last.x + l.height / 4, pos['right']!.dy);
+      pos['right'] = Offset(
+        _aa(f['right']!) ? last.x : last.x + l.height / 4,
+        pos['right']!.dy,
+      );
     } else {
       f['left'] = last.angle;
       p['left'] = last.id;
-      pos['left'] =
-          Offset(_aa(f['left']!) ? last.x : last.x - l.height / 4, pos['left']!.dy);
+      pos['left'] = Offset(
+        _aa(f['left']!) ? last.x : last.x - l.height / 4,
+        pos['left']!.dy,
+      );
     }
   }
 
@@ -394,12 +401,16 @@ List<_Pos> _na(
       f['right'] = last.angle;
       p['right'] = last.id;
       pos['right'] = Offset(
-          pos['right']!.dx, _aa(f['right']!) ? last.y - l.height / 4 : last.y);
+        pos['right']!.dx,
+        _aa(f['right']!) ? last.y - l.height / 4 : last.y,
+      );
     } else {
       f['left'] = last.angle;
       p['left'] = last.id;
       pos['left'] = Offset(
-          pos['left']!.dx, _aa(f['left']!) ? last.y + l.height / 4 : last.y);
+        pos['left']!.dx,
+        _aa(f['left']!) ? last.y + l.height / 4 : last.y,
+      );
     }
   }
 
@@ -420,12 +431,16 @@ List<_Pos> _na(
       f['right'] = last.angle;
       p['right'] = last.id;
       pos['right'] = Offset(
-          _aa(f['right']!) ? last.x : last.x - l.height / 4, pos['right']!.dy);
+        _aa(f['right']!) ? last.x : last.x - l.height / 4,
+        pos['right']!.dy,
+      );
     } else {
       f['left'] = last.angle;
       p['left'] = last.id;
       pos['left'] = Offset(
-          _aa(f['left']!) ? last.x : last.x + l.height / 4, pos['left']!.dy);
+        _aa(f['left']!) ? last.x : last.x + l.height / 4,
+        pos['left']!.dy,
+      );
     }
   }
 
@@ -446,12 +461,16 @@ List<_Pos> _na(
       f['right'] = last.angle;
       p['right'] = last.id;
       pos['right'] = Offset(
-          pos['right']!.dx, _aa(f['right']!) ? last.y + l.height / 4 : last.y);
+        pos['right']!.dx,
+        _aa(f['right']!) ? last.y + l.height / 4 : last.y,
+      );
     } else {
       f['left'] = last.angle;
       p['left'] = last.id;
       pos['left'] = Offset(
-          pos['left']!.dx, _aa(f['left']!) ? last.y - l.height / 4 : last.y);
+        pos['left']!.dx,
+        _aa(f['left']!) ? last.y - l.height / 4 : last.y,
+      );
     }
   }
 
@@ -468,12 +487,16 @@ List<_Pos> _na(
       f['top'] = last.angle;
       p['top'] = last.id;
       pos['top'] = Offset(
-          pos['top']!.dx, _aa(f['top']!) ? last.y - l.height / 4 : last.y);
+        pos['top']!.dx,
+        _aa(f['top']!) ? last.y - l.height / 4 : last.y,
+      );
     } else {
       f['bottom'] = last.angle;
       p['bottom'] = last.id;
       pos['bottom'] = Offset(
-          pos['bottom']!.dx, _aa(f['bottom']!) ? last.y + l.height / 4 : last.y);
+        pos['bottom']!.dx,
+        _aa(f['bottom']!) ? last.y + l.height / 4 : last.y,
+      );
     }
   }
 
@@ -494,12 +517,16 @@ List<_Pos> _na(
       f['top'] = last.angle;
       p['top'] = last.id;
       pos['top'] = Offset(
-          _aa(f['top']!) ? last.x : last.x - l.height / 4, last.y);
+        _aa(f['top']!) ? last.x : last.x - l.height / 4,
+        last.y,
+      );
     } else {
       f['bottom'] = last.angle;
       p['bottom'] = last.id;
       pos['bottom'] = Offset(
-          _aa(f['bottom']!) ? last.x : last.x + l.height / 4, last.y);
+        _aa(f['bottom']!) ? last.x : last.x + l.height / 4,
+        last.y,
+      );
     }
   }
 
@@ -512,7 +539,9 @@ List<_Pos> _na(
     var ang = lt ? f['top']! : f['bottom']!;
     final sid = lt ? p['top']! : p['bottom']!;
     if (sid[0] == sid[1]) ang = _angleHRev;
-    final fromId = (lt ? ang == _angleVDown : ang == _angleVUp) ? sid[1] : sid[0];
+    final fromId = (lt ? ang == _angleVDown : ang == _angleVUp)
+        ? sid[1]
+        : sid[0];
     final start = lt ? pos['top']! : pos['bottom']!;
     _la(chain, fromId, start, lt ? f['top']! : f['bottom']!, lt, l, r, ha);
     final last = ha[ha.length - 1];
@@ -520,12 +549,16 @@ List<_Pos> _na(
       f['top'] = last.angle;
       p['top'] = last.id;
       pos['top'] = Offset(
-          _aa(f['top']!) ? last.x : last.x - l.height / 4, last.y);
+        _aa(f['top']!) ? last.x : last.x - l.height / 4,
+        last.y,
+      );
     } else {
       f['bottom'] = last.angle;
       p['bottom'] = last.id;
       pos['bottom'] = Offset(
-          _aa(f['bottom']!) ? last.x : last.x + l.height / 4, last.y);
+        _aa(f['bottom']!) ? last.x : last.x + l.height / 4,
+        last.y,
+      );
     }
   }
 
@@ -580,15 +613,16 @@ List<List<String>> _toIds(List<DominoTile> chain) {
   ];
 }
 
-DominoTile? _findTile(
-  List<String> id,
-  DominoTile center,
-  ChainResult chain,
-) {
+DominoTile? _findTile(List<String> id, DominoTile center, ChainResult chain) {
   if (id[0] == center.minor.toString() && id[1] == center.major.toString()) {
     return center;
   }
-  for (final tile in [...chain.left, ...chain.right, ...chain.up, ...chain.down]) {
+  for (final tile in [
+    ...chain.left,
+    ...chain.right,
+    ...chain.up,
+    ...chain.down,
+  ]) {
     if (id[0] == tile.minor.toString() && id[1] == tile.major.toString()) {
       return tile;
     }
@@ -603,7 +637,13 @@ class TilePlacement {
   final bool isFlipped;
   final double angle;
 
-  TilePlacement(this.tile, this.offset, this.horizontal, this.isFlipped, this.angle);
+  TilePlacement(
+    this.tile,
+    this.offset,
+    this.horizontal,
+    this.isFlipped,
+    this.angle,
+  );
 }
 
 class SnakeLayout {
@@ -629,72 +669,145 @@ Rect _layoutBounds(List<_Pos> positions, double w, double h) {
   return Rect.fromLTRB(minX, minY, maxX, maxY);
 }
 
-/// Compute snake layout for the board, fitting within [maxWidth]x[maxHeight]
-/// via the APK's iterative scale-down loop.
+/// Lays the chain out from the centre: 4 tiles in the middle row, then the
+/// left side turns up and the right side turns down. Tiles stay inside the
+/// boundary; if the whole thing can't fit, it zooms out.
 SnakeLayout computeLayout(
   List<PlacedTile> board, {
   required double maxWidth,
   required double maxHeight,
 }) {
-  final chain = buildChain(board);
-  final center = chain.center;
-  final centerId = [center.minor.toString(), center.major.toString()];
+  if (board.isEmpty) return SnakeLayout(const [], Rect.zero, 1.0);
 
-  final left = _toIds(chain.left)..add(['left', '-1']);
-  final right = _toIds(chain.right)..add(['right', '-1']);
-  final down = _toIds(chain.down);
-  final up = _toIds(chain.up);
+  const middleCount = 4;
+  final middle = board.take(middleCount).toList();
+  final leftMiddle = middle.where((p) => p.side == 'left').length;
+  final rightMiddle = middle.where((p) => p.side == 'right').length;
 
-  double s = 1.0;
-  var result = <_Pos>[];
-  Rect bounds = Rect.zero;
+  final left = board.where((p) => p.side == 'left').toList();
+  final right = board.where((p) => p.side == 'right').toList();
 
-  for (var iter = 0; iter < 100; iter++) {
-    final centerRect = Size(_tileW * s, _tileH * s);
-    result = _na(centerId, left, right, down, up,
-        Size(math.max(maxWidth, 1), math.max(maxHeight, 1)), centerRect, 12 * s);
+  double s = 0.75;
+  var placements = <TilePlacement>[];
+  var bounds = Rect.zero;
 
-    final real = result.where((p) => !_isSentinel(p.id)).toList();
-    bounds = _layoutBounds(real, _tileW * s, _tileH * s);
-    final fits = bounds.width <= maxWidth && bounds.height <= maxHeight;
-    final overlaps = _hasOverlap(real, _tileW * s, _tileH * s);
-    if (fits && !overlaps) break;
-    s -= 0.01;
-    if (s < 0.1) break;
-  }
+  for (var iter = 0; iter < 80; iter++) {
+    placements = [];
+    final center = board.first.tile;
+    final centerHorizontal = !center.isDouble;
+    final centerW = (centerHorizontal ? _tileW : _tileH) * s;
+    final centerHi = math.max(center.top, center.bottom);
+    placements.add(
+      TilePlacement(
+        center,
+        Offset.zero,
+        centerHorizontal,
+        centerHorizontal ? center.top != centerHi : false,
+        centerHorizontal ? 0 : -90,
+      ),
+    );
 
-  final placements = <TilePlacement>[];
-  for (final p in result) {
-    if (_isSentinel(p.id)) continue;
-    final tile = _findTile(p.id, center, chain);
-    if (tile == null) continue;
+    _addSide(placements, left, true, centerW, s, leftMiddle);
+    _addSide(placements, right, false, centerW, s, rightMiddle);
 
-    bool horizontal;
-    bool isFlipped;
-    final angle = p.angle.round();
-    switch (angle) {
-      case 0:
-        horizontal = true;
-        isFlipped = tile.top != tile.minor;
-        break;
-      case 180:
-      case -180:
-        horizontal = true;
-        isFlipped = tile.top != tile.major;
-        break;
-      case 90:
-        horizontal = false;
-        isFlipped = tile.top != tile.minor;
-        break;
-      default: // -90
-        horizontal = false;
-        isFlipped = tile.top != tile.major;
-        break;
+    bounds = _placementsBounds(placements, s);
+    if (bounds.width <= maxWidth * 0.9 && bounds.height <= maxHeight * 0.9) {
+      break;
     }
-    placements.add(TilePlacement(tile, Offset(p.x, p.y), horizontal, isFlipped, p.angle));
+    s -= 0.02;
+    if (s < 0.2) break;
   }
 
   return SnakeLayout(placements, bounds, s);
+}
+
+void _addSide(
+  List<TilePlacement> out,
+  List<PlacedTile> tiles,
+  bool isLeft,
+  double centerW,
+  double s,
+  int middleN,
+) {
+  if (tiles.isEmpty) return;
+  final tileW = _tileW * s;
+  final tileH = _tileH * s;
+  const gap = 2.0;
+  const dirs = [Offset(-1, 0), Offset(0, -1), Offset(1, 0), Offset(0, 1)];
+
+  var lastCenter = const Offset(0, 0);
+  var prevDir = isLeft ? 0 : 2;
+  var dir = prevDir;
+  var segLeft = middleN;
+  var prevAlong = centerW;
+  var prevPerp = tileH;
+  Offset? tileCenter;
+
+  for (var i = 0; i < tiles.length; i++) {
+    // Fixed 4 tiles per segment after the middle row, then turn clockwise.
+    if (i > 0 && segLeft == 0) {
+      dir = (dir + 1) % 4;
+      segLeft = 4;
+    }
+
+    final p = tiles[i];
+    final tile = p.tile;
+    final chainHorizontal = dir == 0 || dir == 2;
+    // Doubles stand across the chain.
+    final horizontal = tile.isDouble ? !chainHorizontal : chainHorizontal;
+    final along = (horizontal == chainHorizontal) ? tileW : tileH;
+    final perp = (horizontal == chainHorizontal) ? tileH : tileW;
+
+    if (i == 0) {
+      tileCenter = Offset(
+        (isLeft ? -1 : 1) * (centerW / 2 + gap + along / 2),
+        0,
+      );
+    } else if (dir == prevDir) {
+      tileCenter = lastCenter + dirs[dir] * (prevAlong / 2 + gap + along / 2);
+    } else {
+      tileCenter =
+          lastCenter +
+          dirs[prevDir] * (prevAlong / 4) +
+          dirs[dir] * (prevPerp / 2 + along / 2 + gap);
+    }
+
+    final hi = math.max(tile.top, tile.bottom);
+    bool flipped;
+    if (horizontal) {
+      flipped = lastCenter.dx > tileCenter.dx
+          ? p.connectedEnd == hi
+          : p.connectedEnd != hi;
+    } else {
+      flipped = lastCenter.dy > tileCenter.dy
+          ? p.connectedEnd != hi
+          : p.connectedEnd == hi;
+    }
+
+    out.add(TilePlacement(tile, tileCenter, horizontal, flipped, 0));
+    lastCenter = tileCenter;
+    prevDir = dir;
+    prevAlong = along;
+    prevPerp = perp;
+    // Doubles sit across the chain, so they shouldn't force the segment to end.
+    if (!tile.isDouble) segLeft--;
+  }
+}
+
+Rect _placementsBounds(List<TilePlacement> placements, double s) {
+  var minX = double.infinity;
+  var minY = double.infinity;
+  var maxX = -double.infinity;
+  var maxY = -double.infinity;
+  for (final p in placements) {
+    final w = (p.horizontal ? _tileW : _tileH) * s;
+    final h = (p.horizontal ? _tileH : _tileW) * s;
+    minX = math.min(minX, p.offset.dx - w / 2);
+    maxX = math.max(maxX, p.offset.dx + w / 2);
+    minY = math.min(minY, p.offset.dy - h / 2);
+    maxY = math.max(maxY, p.offset.dy + h / 2);
+  }
+  return Rect.fromLTRB(minX, minY, maxX, maxY);
 }
 
 bool _hasOverlap(List<_Pos> positions, double w, double h) {
@@ -719,7 +832,17 @@ bool _hasOverlap(List<_Pos> positions, double w, double h) {
 class GameBoard extends StatelessWidget {
   final List<PlacedTile> board;
 
-  const GameBoard({super.key, required this.board});
+  /// Builds the visual for a placed tile. When omitted the code-drawn
+  /// [DominoTileWidget] is used.
+  final Widget Function(
+    DominoTile tile, {
+    required bool horizontal,
+    required bool isFlipped,
+    required double scale,
+  })?
+  tileBuilder;
+
+  const GameBoard({super.key, required this.board, this.tileBuilder});
 
   @override
   Widget build(BuildContext context) {
@@ -728,10 +851,19 @@ class GameBoard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.casino_rounded, color: Colors.white.withValues(alpha: 0.15), size: 40),
+            Icon(
+              Icons.casino_rounded,
+              color: Colors.white.withValues(alpha: 0.15),
+              size: 40,
+            ),
             const SizedBox(height: 8),
-            Text('Place the first tile',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 14)),
+            Text(
+              'Place the first tile',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.2),
+                fontSize: 14,
+              ),
+            ),
           ],
         ),
       );
@@ -747,29 +879,59 @@ class GameBoard extends StatelessWidget {
         final bounds = layout.bounds;
         final scale = layout.scale;
 
-        return Center(
-          child: SizedBox(
-            width: bounds.width,
-            height: bounds.height,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                for (final pos in layout.positions)
-                  Positioned(
-                    left: pos.offset.dx - bounds.left -
-                        (pos.horizontal ? _tileW : _tileH) * scale / 2,
-                    top: pos.offset.dy - bounds.top -
-                        (pos.horizontal ? _tileH : _tileW) * scale / 2,
-                    child: DominoTileWidget(
-                      tile: pos.tile,
-                      horizontal: pos.horizontal,
-                      isFlipped: pos.isFlipped,
-                      scale: scale,
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            // DEBUG: boundary guide — remove once the snake is approved.
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: const Color(0xFFFF5252),
+                      width: 1,
                     ),
                   ),
-              ],
+                ),
+              ),
             ),
-          ),
+            Center(
+              child: SizedBox(
+                width: bounds.width,
+                height: bounds.height,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    for (final pos in layout.positions)
+                      Positioned(
+                        key: ValueKey('${pos.tile.top}-${pos.tile.bottom}'),
+                        left:
+                            pos.offset.dx -
+                            bounds.left -
+                            (pos.horizontal ? _tileW : _tileH) * scale / 2,
+                        top:
+                            pos.offset.dy -
+                            bounds.top -
+                            (pos.horizontal ? _tileH : _tileW) * scale / 2,
+                        child:
+                            tileBuilder?.call(
+                              pos.tile,
+                              horizontal: pos.horizontal,
+                              isFlipped: pos.isFlipped,
+                              scale: scale,
+                            ) ??
+                            DominoTileWidget(
+                              tile: pos.tile,
+                              horizontal: pos.horizontal,
+                              isFlipped: pos.isFlipped,
+                              scale: scale,
+                            ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

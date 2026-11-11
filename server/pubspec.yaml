@@ -1,0 +1,7 @@
+name: domino_server
+description: Authoritative matchmaking and game server for Domino Battle Arena.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.0.0

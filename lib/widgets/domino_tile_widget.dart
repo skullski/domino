@@ -33,15 +33,15 @@ class DominoTileWidget extends StatelessWidget {
     final h = (horizontal ? 50.0 : 102.0) * scale;
 
     final borderColor = isSelected
-        ? const Color(0xFF2BEE4B)
+        ? const Color(0xFFFFD60A)
         : isPlayable
-            ? const Color(0xFF2BEE4B).withValues(alpha: 0.5)
-            : const Color(0xFF9CA3AF).withValues(alpha: 0.4);
+            ? const Color(0xFF42A5F5)
+            : Colors.white.withOpacity(0.3);
     final borderWidth = isSelected
-        ? 4.0 * scale
+        ? 3.0 * scale
         : isPlayable
             ? 2.0 * scale
-            : 1.5 * scale;
+            : 1.0 * scale;
 
     return GestureDetector(
       onTap: onTap,
@@ -54,12 +54,12 @@ class DominoTileWidget extends StatelessWidget {
             height: h,
             decoration: BoxDecoration(
               gradient: const RadialGradient(
-                center: Alignment(-0.2, -0.4),
-                radius: 1.2,
+                center: Alignment(-0.3, -0.5),
+                radius: 1.3,
                 colors: [
                   Color(0xFFFFFFFF),
-                  Color(0xFFFDFBF7),
-                  Color(0xFFF3F0E8),
+                  Color(0xFFF8F6F2),
+                  Color(0xFFEEEAE2),
                 ],
               ),
               borderRadius: BorderRadius.circular(6 * scale),
@@ -67,20 +67,20 @@ class DominoTileWidget extends StatelessWidget {
               boxShadow: [
                 if (isSelected)
                   BoxShadow(
-                    color: const Color(0xFF2BEE4B).withValues(alpha: 0.6),
+                    color: const Color(0xFFFFD60A).withValues(alpha: 0.6),
                     blurRadius: 15 * scale,
                     spreadRadius: 2 * scale,
                   )
                 else ...[
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
-                    blurRadius: 8 * scale,
-                    offset: Offset(2 * scale, 4 * scale),
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 6 * scale,
+                    offset: Offset(1 * scale, 3 * scale),
                   ),
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 2 * scale,
-                    offset: const Offset(0, 1),
+                    color: Colors.white.withValues(alpha: 0.6),
+                    blurRadius: 1 * scale,
+                    offset: const Offset(0, -1),
                     spreadRadius: -1 * scale,
                   ),
                 ],
@@ -93,31 +93,6 @@ class DominoTileWidget extends StatelessWidget {
                   : _buildFace(horizontal),
             ),
           ),
-          // Single gold marker on the divider for doubles (ref2 style).
-          if (!faceDown && tile.isDouble)
-            Container(
-              width: 10 * scale,
-              height: 10 * scale,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const RadialGradient(
-                  center: Alignment(-0.3, -0.3),
-                  radius: 1.0,
-                  colors: [Color(0xFFFBBF24), Color(0xFFB45309)],
-                ),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.3),
-                  width: 1 * scale,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.6),
-                    blurRadius: 3 * scale,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-            ),
         ],
       ),
     );
@@ -129,14 +104,16 @@ class DominoTileWidget extends StatelessWidget {
         width: (horizontal ? 34.0 : 28.0) * scale,
         height: (horizontal ? 28.0 : 34.0) * scale,
         decoration: BoxDecoration(
-          color: const Color(0xFF546E7A),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.white, const Color(0xFFF0F0F0), const Color(0xFFE0E0E0)],
+          ),
           borderRadius: BorderRadius.circular(4 * scale),
-          border: Border.all(color: const Color(0xFF78909C), width: 1 * scale),
-        ),
-        child: Icon(
-          Icons.question_answer_rounded,
-          color: const Color(0xFF90A4AE),
-          size: 14 * scale,
+          border: Border.all(color: const Color(0xFFBDBDBD), width: 1 * scale),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4 * scale, offset: Offset(1 * scale, 2 * scale)),
+          ],
         ),
       ),
     );
@@ -180,22 +157,7 @@ class DominoTileWidget extends StatelessWidget {
   }
 
   Color _pipColor(int value) {
-    switch (value) {
-      case 1:
-        return const Color(0xFF3B82F6);
-      case 2:
-        return const Color(0xFF10B981);
-      case 3:
-        return const Color(0xFFEF4444);
-      case 4:
-        return const Color(0xFFF59E0B);
-      case 5:
-        return const Color(0xFF8B5CF6);
-      case 6:
-        return const Color(0xFF06B6D4);
-      default:
-        return const Color(0xFF374151);
-    }
+    return const Color(0xFF2C2C2C);
   }
 
   Widget _buildDivider({required bool vertical}) {

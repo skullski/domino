@@ -54,28 +54,14 @@ class GameState {
   }
 
   void addTileToBoard(DominoTile tile, String side, int connectedEnd) {
-    // Determine direction based on chain shape
-    TileDirection dir = TileDirection.horizontal;
+    board.add(PlacedTile(tile, side, connectedEnd));
     if (board.length == 1) {
-      dir = TileDirection.verticalDown;
-    } else if (board.length == 2) {
-      dir = TileDirection.horizontal;
-    } else if (board.length == 3) {
-      dir = TileDirection.verticalUp;
-    }
-    // After 4 tiles, alternate between horizontal and vertical
-
-    board.add(PlacedTile(tile, side, connectedEnd, direction: dir));
-
-    if (isBoardEmpty || board.length == 1) {
       leftEnd = tile.top;
       rightEnd = tile.bottom;
+    } else if (side == 'left') {
+      leftEnd = tile.getOtherEnd(connectedEnd);
     } else {
-      if (side == 'left') {
-        leftEnd = tile.getOtherEnd(connectedEnd);
-      } else {
-        rightEnd = tile.getOtherEnd(connectedEnd);
-      }
+      rightEnd = tile.getOtherEnd(connectedEnd);
     }
   }
 

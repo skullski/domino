@@ -24,7 +24,7 @@ class PlayerHandWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       itemCount: hand.length,
       itemBuilder: (context, index) {
         final tile = hand[index];
@@ -32,14 +32,14 @@ class PlayerHandWidget extends StatelessWidget {
         final isSelected = selectedTile == tile;
 
         return Padding(
-          padding: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: 6),
           child: DominoTileWidget(
             tile: tile,
             isSelected: isSelected,
             isPlayable: isPlayable,
             horizontal: false,
             isFlipped: false,
-            scale: 0.8,
+            scale: 0.85,
             onTap: isPlayable ? () => onTileTap(tile) : null,
           ),
         );

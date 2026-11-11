@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme/app_theme.dart';
 import 'screens/main_menu.dart';
 
 void main() {
@@ -13,11 +14,9 @@ class DominoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Domino',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.green,
-        useMaterial3: true,
-      ),
+      theme: AppTheme.darkTheme,
       home: const MainMenu(),
     );
   }
 }
+// test

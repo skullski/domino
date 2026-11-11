@@ -27,6 +27,14 @@ class RulesEngine {
     return false;
   }
 
+  /// The sides ('left' / 'right') where [tile] can legally be played.
+  static List<String> getValidSides(DominoTile tile, List<int> openEnds) {
+    final sides = <String>[];
+    if (tile.matches(openEnds.first)) sides.add('left');
+    if (tile.matches(openEnds.last)) sides.add('right');
+    return sides;
+  }
+
   static String? getPlacementSide(
     DominoTile tile,
     List<int> openEnds,
