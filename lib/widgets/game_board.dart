@@ -745,7 +745,7 @@ void _addSide(
 
   for (var i = 0; i < tiles.length; i++) {
     // Fixed 4 tiles per segment after the middle row, then turn clockwise.
-    if (i > 0 && segLeft == 0) {
+    if (i > 0 && segLeft <= 0) {
       dir = (dir + 1) % 4;
       segLeft = 4;
     }
