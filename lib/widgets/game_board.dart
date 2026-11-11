@@ -789,8 +789,8 @@ void _addSide(
     prevDir = dir;
     prevAlong = along;
     prevPerp = perp;
-    // Doubles sit across the chain, so they shouldn't force the segment to end.
-    if (!tile.isDouble) segLeft--;
+    // Every tile counts, including doubles, so a straight line stays at 4.
+    segLeft--;
   }
 }
 
